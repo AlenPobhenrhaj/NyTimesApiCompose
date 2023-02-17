@@ -1,19 +1,16 @@
 package com.example.nytimesapicompose.model
 
-import android.net.http.HttpResponseCache.install
 import com.example.nytimesapicompose.data.Books
+import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Query
 
 interface BooksApiService {
     @GET("lists.json?list=hardcover-fiction&api-key=VnAPYRcntWaevUsIClh5lsmM5AbTkDxj")
-    suspend fun getBestSellers(
-//        @Query("api-key") apiKey: String,
-//        @Query("offset") offset: Int
-    ):Response<Books>
+    suspend fun getBestSellers(): Response<Books>
 }
 
 fun BooksApi(): BooksApiService {

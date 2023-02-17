@@ -1,31 +1,27 @@
 package com.example.nytimesapicompose.ui.theme
 
-import android.accessibilityservice.AccessibilityService.ScreenshotResult
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import androidx.activity.compose.setContent
+import androidx.compose.Effect
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
+import com.example.nytimesapicompose.data.BookDetail
 import com.example.nytimesapicompose.data.Books
 import com.example.nytimesapicompose.model.BooksApi
 import com.example.nytimesapicompose.model.BooksApiService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
-//Displays all data but not in list view
+//Displays all data in list view
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Screen(){
@@ -43,6 +39,7 @@ fun BookList(service: BooksApiService) {
 
     LaunchedEffect(Unit) {
         response = service.getBestSellers().toResource()
+
     }
 
     when (val result = response) {
@@ -55,14 +52,31 @@ fun BookList(service: BooksApiService) {
 //                DisplayBookComposable(books[0].book_details[0].title, books[0].book_details[0].author)
 //            }
             LazyColumn(modifier = Modifier.fillMaxHeight()) {
+
                 items(books) { book ->
                     for (bookDetail in book.book_details) {
-                        DisplayBookComposable(bookDetail.title, bookDetail.author)
+
+                        var states = DisplayBookComposable(bookDetail.title, bookDetail.author)
                     }
                     Divider()
+
+                }
+
+            }
+            Clickable(onClick = null) {
+
+                LazyColumn(modifier = Modifier.fillMaxHeight()) {
+
+                    items(books) { book ->
+                        for (bookDetail in book.book_details) {
+                            DisplayDescComposable(bookDetail.title, bookDetail.description)
+                        }
+                        Divider()
+
+                    }
+
                 }
             }
-
 
         }
         is Resource.Failure -> {
@@ -86,6 +100,21 @@ fun DisplayBookComposable(title: String, author: String) {
     DisplayBook(title, author)
 }
 
+@Composable
+fun DisplayBookDesc(title: String, description : String) {
+    // Use Jetpack Compose to display the book title and author
+    Column {
+        Text(text = "Title: $title")
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Description: $description")
+    }
+}
+
+@Composable
+fun DisplayDescComposable(title: String, description: String) {
+    DisplayBookDesc(title, description)
+}
+
 sealed class Resource<out T> {
     class Loading<out T> : Resource<T>()
     data class Success<out T>(val data: T) : Resource<T>()
@@ -100,3 +129,16 @@ fun <T> Response<T>.toResource(): Resource<T> {
     }
 }
 
+
+@Composable
+fun Clickable(
+    onClick: Effect<State<Unit>>? = null,
+    consumeDownOnStart: Boolean = false,
+    children: @Composable() () -> Unit
+){
+
+}
+
+@Composable
+fun BookTest(){
+}
